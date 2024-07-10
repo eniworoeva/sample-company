@@ -9,7 +9,6 @@ This project provides a REST API for managing computers issued by SampleCompany.
 - [Configuration](#configuration)
 - [Usage](#usage)
 - [Endpoints](#endpoints)
-- [Testing](#testing)
 - [Documentation](#documentation)
 - [Notes](#notes)
 
@@ -21,57 +20,73 @@ Follow these instructions to set up and run the project on your local machine.
 
 1. Clone the repository:
 
-    ```sh
-    git clone https://github.com/yourusername/samplecompany.git
-    cd samplecompany
-    ```
+   ```sh
+   git clone https://github.com/yourusername/samplecompany.git
+   cd samplecompany
+   ```
 
 2. Install Go dependencies:
 
-    ```go
-    go mod tidy
-    ```
+   ```sh
+   go mod tidy
+   ```
 
-3. Install PostgreSQL and set up a database:
+3. Install PostgreSQL using Docker:
 
-    ```sh
-    sudo apt-get install postgresql postgresql-contrib
-    sudo -u postgres createuser --interactive
-    sudo -u postgres createdb samplecompany
-    ```
+   Create a `docker-compose.yml` file in the project root directory with the following content:
+
+   ```yaml
+   version: "3.1"
+
+   services:
+     postgres:
+       image: postgres
+       restart: always
+       environment:
+         POSTGRES_USER: postgres
+         POSTGRES_PASSWORD: password
+         POSTGRES_DB: sampledb
+       ports:
+         - "5432:5432"
+       volumes:
+         - postgres-data:/var/lib/postgresql/data
+
+   volumes:
+     postgres-data:
+   ```
+
+   Start the PostgreSQL container:
+
+   ```sh
+   docker-compose up -d
+   ```
 
 4. Install Swaggo for generating Swagger documentation:
 
-    ```sh
-    go install github.com/swaggo/swag/cmd/swag@latest
-    ```
+   ```sh
+   go install github.com/swaggo/swag/cmd/swag@latest
+   ```
 
 ## Configuration
 
 1. Create a `.env` file in the project root directory and add the following environment variables:
 
-    ```env
-    DATABASE_URL="postgres://youruser:yourpassword@localhost:5432/samplecompany"
-    PORT=8081
-    ```
+   ```env
+   DATABASE_URL="postgres://postgres:password@localhost:5432/sampledb"
+   PORT=8081
+   ```
 
-    Replace `youruser` and `yourpassword` with your PostgreSQL user and password.
+   Replace `postgres` and `password` with your PostgreSQL user and password.
 
 ## Usage
 
-1. Initialize the database:
+1. Run the server:
 
-    ```bash
-    go run main.go
-    ```
+   ```sh
+   make run
+   ```
 
-2. Run the server:
-
-    ```sh
-    make run
-    ```
-
-    The server will start on `http://localhost:8081`.
+   The server will start on `http://localhost:8081`.
 
 ## Endpoints
 
@@ -83,54 +98,41 @@ Follow these instructions to set up and run the project on your local machine.
 - `DELETE /computers/:id`: Delete a computer
 - `PUT /computers/:id/assign`: Assign a computer to another employee
 
-## Testing
-
-1. Install testing dependencies:
-
-    ```sh
-    go get -u github.com/stretchr/testify
-    ```
-
-2. Run unit tests:
-
-    ```sh
-    go test ./...
-    ```
 
 ## Documentation
 
 1. Generate API documentation using Swaggo:
 
-    ```sh
-    swag init
-    ```
+   ```sh
+   swag init
+   ```
 
-    This will create a `docs` directory with the Swagger documentation.
+   This will create a `docs` directory with the Swagger documentation.
 
 2. Serve the Swagger documentation:
 
-    Add the following route to `main.go`:
+   Add the following route to `main.go`:
 
-    ```go
-    import (
-        "github.com/gin-gonic/gin"
-        "github.com/swaggo/files"
-        "github.com/swaggo/gin-swagger"
-        _ "samplecompany/docs"
-    )
+   ```go
+   import (
+       "github.com/gin-gonic/gin"
+       "github.com/swaggo/files"
+       "github.com/swaggo/gin-swagger"
+       _ "samplecompany/docs"
+   )
 
-    func main() {
-        r := gin.Default()
+   func main() {
+       r := gin.Default()
 
-        // Other routes
+       // Other routes
 
-        r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+       r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-        r.Run()
-    }
-    ```
+       r.Run()
+   }
+   ```
 
-    Now you can access the API documentation at `http://localhost:8080/swagger/index.html`.
+   Now you can access the API documentation at `http://localhost:8081/swagger/index.html`.
 
 ## Notes
 
@@ -142,8 +144,7 @@ Follow these instructions to set up and run the project on your local machine.
 ## Amendments
 
 - **Database Configuration**: If you change the database configuration, update the `DATABASE_URL` in the `.env` file accordingly.
-- **Port Configuration**: The server runs on port 8080 by default. You can change this by setting the `PORT` environment variable.
-- **Testing**: Make sure to add comprehensive unit tests for all new features and functionalities.
+- **Port Configuration**: The server runs on port 8081 by default. You can change this by setting the `PORT` environment variable.
 - **Swagger Documentation**: Keep the Swagger comments up-to-date with the latest changes in the API.
 
 ## Conclusion

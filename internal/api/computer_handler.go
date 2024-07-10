@@ -17,7 +17,7 @@ func (u *HTTPHandler) CreateComputer(c *gin.Context) {
 		return
 	}
 
-	if len(computer.EmployeeAbbr) != 3 {
+	if computer.EmployeeAbbr != "" && len(computer.EmployeeAbbr) != 3 {
 		util.Response(c, "Invalid request", http.StatusBadRequest, nil, []string{"Employee abbreviation must be 3 characters"})
 		return
 	}
