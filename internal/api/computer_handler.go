@@ -82,6 +82,20 @@ func (u *HTTPHandler) UpdateComputer(c *gin.Context) {
 		return
 	}
 
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		util.Response(c, "Invalid ID", http.StatusBadRequest, nil, []string{"Invalid ID"})
+		return
+	}
+
+	compt, err := u.Repository.GetComputerByID(uint(id))
+	if err != nil {
+		util.Response(c, "Computer not found", http.StatusNotFound, nil, []string{err.Error()})
+		return
+	}
+
+	computer.ID = compt.ID
+
 	if err := u.Repository.UpdateComputer(&computer); err != nil {
 		util.Response(c, "Failed to update computer", http.StatusInternalServerError, nil, []string{err.Error()})
 		return
