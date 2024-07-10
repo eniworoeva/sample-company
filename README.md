@@ -43,9 +43,9 @@ Follow these instructions to set up and run the project on your local machine.
        image: postgres
        restart: always
        environment:
-         POSTGRES_USER: postgres
-         POSTGRES_PASSWORD: password
-         POSTGRES_DB: sampledb
+        POSTGRES_USER: ${POSTGRES_USER}
+        POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        POSTGRES_DB: ${POSTGRES_DB}
        ports:
          - "5432:5432"
        volumes:
@@ -72,11 +72,14 @@ Follow these instructions to set up and run the project on your local machine.
 1. Create a `.env` file in the project root directory and add the following environment variables:
 
    ```env
-   DATABASE_URL="postgres://postgres:password@localhost:5432/sampledb"
+   DATABASE_URL="postgres://postgres:yourpassword@localhost:5432/sampledb"
    PORT=8081
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=yourpassword
+   POSTGRES_DB=sampledb
    ```
 
-   Replace `postgres` and `password` with your PostgreSQL user and password.
+   Replace `postgres` and `yourpassword` with your PostgreSQL user and password.
 
 ## Usage
 
@@ -97,7 +100,6 @@ Follow these instructions to set up and run the project on your local machine.
 - `PUT /computers/:id`: Update a computer
 - `DELETE /computers/:id`: Delete a computer
 - `PUT /computers/:id/assign`: Assign a computer to another employee
-
 
 ## Documentation
 
